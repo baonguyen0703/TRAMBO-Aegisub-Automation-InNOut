@@ -1,7 +1,11 @@
-script_name="@TRAMBO: In N Out v2.2"
+--[[TODO: 1. (+) option start offset & end offset, for example: (300,1000,fx) / (-1000,-500,fx)
+          2. (+) for L<-R: if using multiple lines with \N, start from first -> last line instead of last -> first line
+  ]] 
+
+script_name="@TRAMBO: In N Out v2.2.1"
 script_description="Create in and out effects"
 script_author="TRAMBO"
-script_version="2.2"
+script_version="2.2.1" --fixed bug in checking and generating required files
 
 include("karaskel.lua")
 
@@ -54,22 +58,32 @@ blurin = 0; blurout = 0
 blin = false; blout = false
 anFlag = false; an = "1"
 
-trambo = aegisub.decode_path("?user") .. "\\Trambo"
-path_file = trambo .. "\\InNOut_preset_path.txt"
-preset_file = trambo .. "\\InNOut Preset.txt"
+trambo = aegisub.decode_path("?user") .. [[\Trambo]]
+path_file = trambo .. [[\InNOut_preset_path.txt]]
+preset_file = trambo .. [[\InNOut Preset.txt]]
 
-
+function found_folder(folder_path) 
+  local f = io.open(folder_path .. [[\trambo_test.txt]],"w")
+  if f ~= nil then
+    f:close()
+    os.remove(folder_path .. [[\trambo_test.txt]],"w")
+    return true
+  else
+    return false
+  end
+end
 
 function found(file)
-  local res, err, code = os.rename(file, file)
-  return res
+  local f = io.open(file,"r")
+  if f ~= nil then 
+    f:close()
+    return true
+  else
+    return false
+  end
 end
 
 function check_required_files(list_of_files)
-  if not found(trambo) then
-    os.execute("mkdir -p " .. trambo)
-  end
-  
   for i,file in ipairs(list_of_files) do
     if not found(file) then 
       local f = io.open(file, "w")
@@ -77,8 +91,6 @@ function check_required_files(list_of_files)
     end
   end 
 end
-
-check_required_files({path_file,preset_file})
 
 function get_presetPath()
   local f = io.open(aegisub.decode_path("?user") .. "\\Trambo\\InNOut_preset_path.txt","r+")
@@ -92,7 +104,6 @@ function get_presetPath()
   f:close()
 end
 
-presetPath = get_presetPath()
 function getPreset()
   local list = {}
   local f = io.open(presetPath,"r")
@@ -102,20 +113,25 @@ function getPreset()
   f:close()
   return list
 end
-presetList = getPreset()
-curPreset = presetList[1]
 
 ---------------------------------------------
 function main(sub, sel, act)
   ADD = aegisub.dialog.display
   ADO = aegisub.debug.out
+  if not found_folder(trambo) then
+    os.execute("mkdir " .. trambo)
+  end
+  check_required_files({path_file,preset_file})
+  presetPath = get_presetPath()
+  presetList = getPreset()
+  curPreset = presetList[1]
   sel = open_dialog(sub,sel)
   aegisub.set_undo_point(script_name)
   return sel
 end
 ---------------------------------------------
 function open_dialog(sub,sel)
-  
+
   presetList = getPreset()
   local meta, styles = karaskel.collect_head(sub,false)
   GUI = updateGUI()
@@ -1752,15 +1768,15 @@ end
 function updatePreset(p,res)
   msg = [[Are you sure you want to update Preset "]] .. p .. [[" with current values?]]
   local updatePreset_GUI = {
-        { class = "label", x=0, y=0, width=2, height=1, label=msg}
-      }
-      local updatePreset_buttons = {"YES","NO"}
-      updatePreset_choice,updatePreset_res = ADD(updatePreset_GUI,updatePreset_buttons)
-      if updatePreset_choice == "YES" then
-        removePreset(p)
-        savePreset(p,res)
-        loadPreset(p)
-      end
+    { class = "label", x=0, y=0, width=2, height=1, label=msg}
+  }
+  local updatePreset_buttons = {"YES","NO"}
+  updatePreset_choice,updatePreset_res = ADD(updatePreset_GUI,updatePreset_buttons)
+  if updatePreset_choice == "YES" then
+    removePreset(p)
+    savePreset(p,res)
+    loadPreset(p)
+  end
 end
 
 function get_org_ltext(line)
