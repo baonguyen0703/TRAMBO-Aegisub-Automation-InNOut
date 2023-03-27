@@ -12,6 +12,7 @@ Generate In and Out text effects
 #### Tutorials:
 - https://youtu.be/QwFAoro9988 (InNOut v1.0)
 - https://youtu.be/8PlcTH7Yor0 (InNOut v2.0)
+- https://youtu.be/uD0EJwasjKc (InNOut v2.1)
 
 #### Installation:  
 - Put "Trambo.InNOut.lua" into autoload folder, the default path is:  
