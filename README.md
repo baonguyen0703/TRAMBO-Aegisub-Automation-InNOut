@@ -1,7 +1,7 @@
 # TRAMBO-Aegisub-Automation-InNOut
 Generate In and Out text effects  
 
-![image](https://user-images.githubusercontent.com/98341055/227831309-56eab69e-ed05-4ce9-ac25-57c6e04eec43.png)
+![image](https://user-images.githubusercontent.com/98341055/227837533-9e32223a-6adc-4a4b-849f-e11875babb34.png)
 
 #### Features:
 - Generate text effects with options of character/word, time, directions, and effect tags
